@@ -1,0 +1,39 @@
+--- a/kernel/patch/common/accctl.c
++++ b/kernel/patch/common/accctl.c
+@@ -236,9 +236,30 @@
+     int rc = slow_avc_audit_backup(_state, _ssid, _tsid, _tclass, _requested, _audited, _denied, _result, _a);
+     return rc;
+ }
++
++// KP_SKIP_AVC_HOOKS: skip the avc_denied / slow_avc_audit allow-override hooks.
++//
++// These hooks let granted-root tasks override SELinux denials. They are only
++// meaningful when SELinux is enforcing. On a permissive kernel nothing is ever
++// denied, so they are redundant. On some kernels (e.g. MuMuPlayer's 4.19 build)
++// the compiler emitted avc_denied as an IPA-SRA clone "avc_denied.isra.N" whose
++// register/stack argument layout differs from the standard prototype that
++// avc_denied_replace assumes; calling the replacement then dereferences a
++// bogus pointer and the kernel faults during early boot. Skipping the hooks
++// avoids that crash while leaving the su mechanism (commit_common_su / sucompat
++// / supercall) fully functional.
++#define KP_SKIP_AVC_HOOKS 1
+ 
+ int bypass_selinux()
+ {
++#if KP_SKIP_AVC_HOOKS
++    log_boot("bypass_selinux: avc hooks skipped (permissive/isra-safe build)\n");
++    (void)avc_denied_replace;
++    (void)avc_denied_backup;
++    (void)slow_avc_audit_replace;
++    (void)slow_avc_audit_backup;
++    return 0;
++#else
+     unsigned long avc_denied_addr = patch_config->avc_denied;
+     if (avc_denied_addr) {
+         hook_err_t err = hook((void *)avc_denied_addr, (void *)avc_denied_replace, (void **)&avc_denied_backup);
+@@ -257,4 +278,5 @@
+     }
+ 
+     return 0;
++#endif
+ }

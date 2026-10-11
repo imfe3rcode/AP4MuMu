@@ -1,0 +1,12 @@
+# build artifacts & downloads
+build/
+*.tar.xz
+# MuMu / proprietary kernel images — never publish
+Image
+Image.*
+*.qcow2
+*.qcow2.*
+# APKs (download from official releases instead)
+*.apk
+# logs & scratch
+*.log
