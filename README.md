@@ -6,8 +6,8 @@ Stock [APatch](https://github.com/bmax121/APatch) crashes MuMuPlayer Pro at boot
 AP4MuMu is a small fix — a one-line change to KernelPatch plus the boot helper MuMu
 needs — that gets APatch working on MuMu's kernel, with a plain step-by-step guide.
 
-> Tested with MuMuPlayer Pro (Global) on Apple Silicon, Android 12, kernel
-> `4.19.195-android-arm64`. Other MuMu builds may differ slightly.
+> Tested on MacBook Pro (M1 Pro), MuMuPlayer Pro (Global) 1.9.2, Android 12,
+> kernel `4.19.195-android-arm64`. Other hardware / MuMu builds may differ slightly.
 
 ---
 
